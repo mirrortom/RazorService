@@ -1,0 +1,17 @@
+﻿@*通用母版页,独立页面使用*@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+    <title>@ViewBag.Title | github.com</title>
+</head>
+<body>
+    @Include("razorFiles/header")
+    <div class="layout-part2">@RenderBody()</div>
+    <hr />
+    @Include("razorFiles/footer")
+    <hr />
+    @RenderSection("Scripts", false)
+</body>
+</html>

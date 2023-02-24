@@ -1,0 +1,31 @@
+﻿@{
+    Layout = "razorFiles/layout";
+    ViewBag.Title = "Test Razor Page";
+    // 这样做就有智能提示了,编译前一定要去掉
+    //LibTest.razor.PersonEntity Model = null;
+}
+@using System
+<div class="mainbody" style="background-color:lightskyblue;padding:30px">
+    <h1>this is main body!</h1>
+    <h4>Now Time: @DateTime.Now.ToString()</h4>
+    <table>
+        <tr><td>Id</td><td>@Model.Id</td></tr>
+        <tr><td>Name</td><td>@Model.Name</td></tr>
+        <tr><td>Description</td><td>@Model.Description</td></tr>
+        <tr><td>Money</td><td>@Model.Money</td></tr>
+    </table>
+    <div>
+        @Include("razorFiles/main-part")
+    </div>
+    <p><button id="btn1">Try Alert</button></p>
+</div>
+@section Scripts{
+    <script>
+        ((win) => {
+            document.querySelector('#btn1').addEventListener('click', test);
+            function test() {
+                alert("Razor Test Page!");
+            }
+        })(window);
+    </script>
+}
