@@ -1,7 +1,7 @@
-# RazorService
-[²Î¿¼Doc adoconnection](https://github.com/adoconnection/RazorEngineCore)  
+ï»¿# RazorService
+[å‚è€ƒDoc adoconnection](https://github.com/adoconnection/RazorEngineCore)  
 
-Ê¹ÓÃMicrosoft.AspNetCore.Razor.LanguageºÍMicrosoft.CodeAnalysis.CSharp
-ÕâÁ½¸ö¿â¿ÉÊµÏÖrazorµÄ»ù±¾¹¦ÄÜ,Éú³É->±àÒë,ÔËĞĞ³ÌĞò¼¯µÃµ½½á¹û.  
+ä½¿ç”¨Microsoft.AspNetCore.Razor.Languageå’ŒMicrosoft.CodeAnalysis.CSharp
+è¿™ä¸¤ä¸ªåº“å¯å®ç°razorçš„åŸºæœ¬åŠŸèƒ½,ç”Ÿæˆ->ç¼–è¯‘,è¿è¡Œç¨‹åºé›†å¾—åˆ°ç»“æœ.  
 
-[ÏîÄ¿Doc](https://mirrortom.github.io/doc/razorservice.html)  
+[é¡¹ç›®Doc](https://mirrortom.github.io/doc/razorservice.html)  
