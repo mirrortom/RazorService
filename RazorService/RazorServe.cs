@@ -61,6 +61,9 @@ public static class RazorServe
                 if (csSrc == null)
                     throw new Exception("razor source translate into for cs code faild!");
                 RazorCache.SaveCsSrc(md5, csSrc);
+#if DEBUG
+                Helper.Log($"新的生成,已缓存cs: {md5}");
+#endif
             }
             // 3.获取dll
             byte[] dll = RazorCache.GetDll(md5);
@@ -71,6 +74,9 @@ public static class RazorServe
                     throw new Exception(msg);
                 dll = assembly;
                 RazorCache.SaveDll(md5, dll);
+#if DEBUG
+                Helper.Log($"新的编译,已缓存dll: {md5}");
+#endif
             }
             // 4.运行
             return Execute(dll, model, RefBodyTemplate);

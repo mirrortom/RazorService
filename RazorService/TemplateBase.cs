@@ -3,8 +3,10 @@ using System.Text;
 
 namespace RazorService;
 
+
 public abstract class TemplateBase
 {
+
     public readonly StringBuilder buffer = new();
     public string Layout { get; set; } = string.Empty;
     public string Body { get; set; } = string.Empty;
@@ -12,6 +14,10 @@ public abstract class TemplateBase
     public dynamic Model { get; set; } = null;
     public Dictionary<string, Action> SectionsAction { get; set; } = new();
     public Dictionary<string, string> Sections { get; set; } = new();
+    /// <summary>
+    /// @html帮助方法 Raw()等
+    /// </summary>
+    public readonly HtmlExt Html = new();
 
     public abstract Task ExecuteAsync();
 
