@@ -1,21 +1,37 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using System.IO;
 using System.Text;
+using System.Threading.Channels;
 
 namespace RazorService;
 
-// 文件缓存10天过期,内存2小时过期
+// 文件缓存10天过期,内存2小时滑动过期
 internal static class RazorCache
 {
     private static readonly IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
     private static readonly System.Timers.Timer ClearWorkerTimer = new(10_000);
-    private static TimeSpan LifeTime = TimeSpan.FromMinutes(30);
-    private static string CsKey = "cs";
-    private static string DllKey = "dll";
+    private static readonly string CsKey = "cs";
+    private static readonly string DllKey = "dll";
+    /// <summary>
+    /// 选项: 滑动过期时间2小时
+    /// </summary>
+    private static readonly MemoryCacheEntryOptions Ops = new()
+    {
+        SlidingExpiration = TimeSpan.FromMinutes(120)
+    };
 
     static RazorCache()
     {
         ClearWorkerTimer.Elapsed += ClearWorkerTimer_Elapsed;
-        //ClearWorkerTimer.Start();
+        ClearWorkerTimer.Start();
+    }
+
+    /// <summary>
+    /// 停止缓存清理定时器
+    /// </summary>
+    public static void Close()
+    {
+        ClearWorkerTimer.Stop();
     }
 
     /// <summary>
@@ -26,7 +42,26 @@ internal static class RazorCache
     /// <exception cref="NotImplementedException"></exception>
     private static void ClearWorkerTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
-        throw new NotImplementedException();
+        // 检查文件,访问时间为10天前的文件删除掉
+        DirectoryInfo directory = new(Cfg.cacheDir);
+
+        var files = directory.EnumerateFileSystemInfos()
+            .Where(item => item.Extension.EndsWith($".{CsKey}") || item.Extension.EndsWith($".{DllKey}"));
+#if DEBUG
+        Helper.Log($"执行缓存文件检查,总数: {files.Count()}");
+#endif
+        //
+        foreach (FileSystemInfo file in files)
+        {
+            TimeSpan difference = DateTime.Now - file.LastAccessTime;
+            if (difference.TotalDays >= 10)
+            {
+                file.Delete();
+#if DEBUG
+                Helper.Log($"已删除文件缓存:{file.FullName}, 最后访问超过10天: {file.LastAccessTime}");
+#endif
+            }
+        }
     }
 
     private static object Get(string key, string keyType)
@@ -40,7 +75,7 @@ internal static class RazorCache
     {
         // md5.cs / md5.dll
         var _key = $"{key}.{keyType}";
-        memoryCache.Set(_key, value, LifeTime);
+        memoryCache.Set(_key, value, Ops);
     }
 
     /// <summary>

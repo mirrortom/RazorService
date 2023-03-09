@@ -16,3 +16,17 @@ PersonEntity model = new()
 string html = RazorServe.Run(main, model);
 File.WriteAllText("index.html", html, Encoding.UTF8);
 Console.WriteLine("index.html created.");
+Console.WriteLine();
+
+// dynamic model
+dynamic model2=new ExpandoObject();
+model2.Id = 1001;
+model2.Name = "anne";
+model2.Description = "data engineer";
+model2.Money = 50;
+html = RazorServe.Run(main, model2);
+File.WriteAllText("index2.html", html, Encoding.UTF8);
+Console.WriteLine("index2.html created.");
+
+
+Console.ReadLine();
