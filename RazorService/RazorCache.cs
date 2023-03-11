@@ -1,37 +1,47 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using System.IO;
 using System.Text;
-using System.Threading.Channels;
+using Timer = System.Threading.Timer;
 
 namespace RazorService;
 
-// 文件缓存10天过期,内存2小时滑动过期
+// 默认文件缓存10天过期,内存2小时滑动过期
 internal static class RazorCache
 {
     private static readonly IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
-    private static readonly System.Timers.Timer ClearWorkerTimer = new(10_000);
-    private static readonly string CsKey = "cs";
-    private static readonly string DllKey = "dll";
-    /// <summary>
-    /// 选项: 滑动过期时间2小时
-    /// </summary>
-    private static readonly MemoryCacheEntryOptions Ops = new()
-    {
-        SlidingExpiration = TimeSpan.FromMinutes(120)
-    };
+    private static readonly Timer ClearWorkerTimer = new(ClearWorkerTimerCallback);
 
-    static RazorCache()
+    /// <summary>
+    /// CS类缓存文件扩展名
+    /// </summary>
+    private const string CsKey = "cs";
+
+    /// <summary>
+    /// dll缓存文件扩展名
+    /// </summary>
+    private const string DllKey = "dll";
+
+    /// <summary>
+    /// 打开计时器. 定时清除过期的缓存文件
+    /// </summary>
+    internal static void Start()
     {
-        ClearWorkerTimer.Elapsed += ClearWorkerTimer_Elapsed;
-        ClearWorkerTimer.Start();
+        // 文件缓存目录建立
+        Directory.CreateDirectory(RazorCfg.CacheDir);
+        ClearWorkerTimer.Change(0, 10_000);
+#if DEBUG
+        Helper.Log($"缓存定时器开启!");
+#endif
     }
 
     /// <summary>
-    /// 停止缓存清理定时器
+    /// 停止计算器. 停止扫描过期文件
     /// </summary>
-    public static void Close()
+    internal static void Stop()
     {
-        ClearWorkerTimer.Stop();
+        ClearWorkerTimer.Change(Timeout.Infinite, 0);
+#if DEBUG
+        Helper.Log($"缓存定时器停止!");
+#endif
     }
 
     /// <summary>
@@ -40,10 +50,10 @@ internal static class RazorCache
     /// <param name="sender"></param>
     /// <param name="e"></param>
     /// <exception cref="NotImplementedException"></exception>
-    private static void ClearWorkerTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    private static void ClearWorkerTimerCallback(object? state)
     {
         // 检查文件,访问时间为10天前的文件删除掉
-        DirectoryInfo directory = new(Cfg.cacheDir);
+        DirectoryInfo directory = new(RazorCfg.CacheDir);
 
         var files = directory.EnumerateFileSystemInfos()
             .Where(item => item.Extension.EndsWith($".{CsKey}") || item.Extension.EndsWith($".{DllKey}"));
@@ -54,7 +64,7 @@ internal static class RazorCache
         foreach (FileSystemInfo file in files)
         {
             TimeSpan difference = DateTime.Now - file.LastAccessTime;
-            if (difference.TotalDays >= 10)
+            if (difference.TotalDays >= RazorCfg.DeadDays)
             {
                 file.Delete();
 #if DEBUG
@@ -75,7 +85,8 @@ internal static class RazorCache
     {
         // md5.cs / md5.dll
         var _key = $"{key}.{keyType}";
-        memoryCache.Set(_key, value, Ops);
+        memoryCache.Set(_key, value,
+            new MemoryCacheEntryOptions() { SlidingExpiration = TimeSpan.FromMinutes(RazorCfg.DeadMinutes) }); ;
     }
 
     /// <summary>
@@ -89,7 +100,7 @@ internal static class RazorCache
         var cs = Get(key, CsKey);
         if (cs == null)
         {
-            string path = $"{Cfg.cacheDir}/{key}.{CsKey}";
+            string path = $"{RazorCfg.CacheDir}/{key}.{CsKey}";
             if (File.Exists(path))
             {
                 string txt = File.ReadAllText(path);
@@ -118,7 +129,7 @@ internal static class RazorCache
         var dll = Get(key, DllKey);
         if (dll == null)
         {
-            string path = $"{Cfg.cacheDir}/{key}.{DllKey}";
+            string path = $"{RazorCfg.CacheDir}/{key}.{DllKey}";
             if (File.Exists(path))
             {
                 byte[] bytes = File.ReadAllBytes(path);
@@ -137,7 +148,7 @@ internal static class RazorCache
     }
 
     /// <summary>
-    /// 缓存dll到, 文件(10天过期)和内存(30分过期) key是MD5,也是文件名 md5.cs
+    /// 缓存dll
     /// </summary>
     /// <param name="key"></param>
     /// <param name="dll"></param>
@@ -145,12 +156,12 @@ internal static class RazorCache
     internal static void SaveDll(string key, byte[] dll)
     {
         Set(dll, key, DllKey);
-        string path = $"{Cfg.cacheDir}/{key}.{DllKey}";
+        string path = $"{RazorCfg.CacheDir}/{key}.{DllKey}";
         File.WriteAllBytes(path, dll);
     }
 
     /// <summary>
-    /// 缓存cs到, 文件(10天过期)和内存(30分过期) key是MD5,也是文件名 md5.cs
+    /// 缓存cs
     /// </summary>
     /// <param name="key"></param>
     /// <param name="src"></param>
@@ -158,7 +169,7 @@ internal static class RazorCache
     internal static void SaveCsSrc(string key, string src)
     {
         Set(src, key, CsKey);
-        string path = $"{Cfg.cacheDir}/{key}.{CsKey}";
+        string path = $"{RazorCfg.CacheDir}/{key}.{CsKey}";
         File.WriteAllText(path, src, Encoding.UTF8);
     }
 }

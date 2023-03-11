@@ -1,6 +1,6 @@
 ﻿namespace RazorService;
 
-public static class RazorServe
+public class RazorServe
 {
     /// <summary>
     /// 处理razor文件
@@ -51,13 +51,13 @@ public static class RazorServe
     {
         try
         {
-            string md5 = razorSrc.GetHex32Md5();
+            string md5 = Helper.GetHex32Md5(razorSrc);
             // 2.获取cs源码
             string csSrc = RazorCache.GetCsSrc(md5);
             if (csSrc == null)
             {
                 // 首次生成时,缓存到文件和内存
-                csSrc = RazorHelp.RazorSrcToCsSrc(razorSrc);
+                csSrc = RazorCompile.RazorSrcToCsSrc(razorSrc);
                 if (csSrc == null)
                     throw new Exception("razor source translate into for cs code faild!");
                 RazorCache.SaveCsSrc(md5, csSrc);
@@ -69,7 +69,7 @@ public static class RazorServe
             byte[] dll = RazorCache.GetDll(md5);
             if (dll == null)
             {
-                var (assembly, isok, msg) = RazorHelp.CsSrcCompile(csSrc);
+                var (assembly, isok, msg) = RazorCompile.CsSrcCompile(csSrc);
                 if (isok == false)
                     throw new Exception(msg);
                 dll = assembly;
@@ -99,7 +99,7 @@ public static class RazorServe
     private static string Execute(byte[] dll, dynamic model, TemplateBase RefBodyTemplate = null)
     {
         // 获取实例
-        var instance = RazorHelp.GetInstance(dll);
+        var instance = RazorCompile.GetInstance(dll);
         if (model != null)
         {
             instance.Model = model;

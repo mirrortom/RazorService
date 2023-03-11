@@ -2,9 +2,13 @@
 using RazorServiceTest;
 using System.Drawing;
 using System.Dynamic;
+using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 
+RazorCfg.AddSearchDirs("razorFiles");
+RazorCfg.StartTimer();
 string main = "main";
 PersonEntity model = new()
 {
@@ -13,6 +17,7 @@ PersonEntity model = new()
     Description = "software worker",
     Money = 10
 };
+
 string html = RazorServe.Run(main, model);
 File.WriteAllText("index.html", html, Encoding.UTF8);
 Console.WriteLine("index.html created.");
@@ -30,3 +35,4 @@ Console.WriteLine("index2.html created.");
 
 
 Console.ReadLine();
+RazorCfg.StopTimer();

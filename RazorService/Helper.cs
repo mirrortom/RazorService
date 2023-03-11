@@ -9,17 +9,20 @@ namespace RazorService;
 internal static class Helper
 {
 #if DEBUG
+
     public static void Log(string info)
     {
         Console.WriteLine(info);
     }
+
 #endif
+
     /// <summary>
     /// 获取文本的md5,以32位16进制字符串形式
     /// </summary>
     /// <param name="str"></param>
     /// <returns></returns>
-    internal static string GetHex32Md5(this string plain)
+    internal static string GetHex32Md5(string plain)
     {
         byte[] buffer = Encoding.UTF8.GetBytes(plain);
         var data = MD5.Create().ComputeHash(buffer);
@@ -27,7 +30,7 @@ internal static class Helper
     }
 
     /// <summary>
-    /// 从指定的目录查找文件,返回文件内容,没找到返回null
+    /// 从搜索目录查找razor文件,返回文件内容,没找到返回null
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
@@ -41,7 +44,7 @@ internal static class Helper
         string p = path;
         if (!Path.HasExtension(path))
         {
-            p = $"{path}.{Cfg.extName}";
+            p = $"{path}.{RazorCfg.ExtName}";
             if (File.Exists(p))
                 return File.ReadAllText(p);
         }
@@ -49,7 +52,7 @@ internal static class Helper
         // 从搜索目录查找
         // 取得文件名字,加上缓存目录
         string name = Path.GetFileName(p);
-        foreach (var dir in Cfg.searchDirs)
+        foreach (var dir in RazorCfg.SearchDirs)
         {
             string file = $"{dir}/{name}";
             if (File.Exists(file))

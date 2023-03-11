@@ -6,7 +6,7 @@ using System.Text;
 
 namespace RazorService;
 
-internal static class RazorHelp
+internal static class RazorCompile
 {
     /// <summary>
     /// razor源码生成C#源码
@@ -17,7 +17,7 @@ internal static class RazorHelp
         RazorProjectEngine engine = RazorProjectEngine.Create(
             RazorConfiguration.Default,
             RazorProjectFileSystem.Create(@"."),
-            Cfg.RazorBuilder);
+            RazorCfg.RazorBuilder);
         //
         RazorSourceDocument document = RazorSourceDocument.Create(
             razorSrc,
@@ -42,7 +42,7 @@ internal static class RazorHelp
         var compilation = CSharpCompilation.Create(
             Path.GetRandomFileName(),
             new[] { syntaxTree },
-            references: Cfg.refence,
+            references: RazorCfg.Refence,
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
         );
 
@@ -72,7 +72,7 @@ internal static class RazorHelp
     public static TemplateBase GetInstance(byte[] assemblyBytes)
     {
         var assembly = Assembly.Load(assemblyBytes);
-        var type = assembly.GetType($"{Cfg.assemblyName}.{Cfg.TemplateClassName}");
+        var type = assembly.GetType($"{RazorCfg.AssemblyName}.{RazorCfg.TemplateClassName}");
         return Activator.CreateInstance(type) as TemplateBase;
     }
 }
