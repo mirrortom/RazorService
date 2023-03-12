@@ -6,43 +6,47 @@
 }
 @using System
 <div class="mainbody" style="background-color:lightskyblue;padding:30px">
-    <h1>Main Body</h1>
-    <h4>Using Microsoft.AspNetCore.Razor.Language</h4>
-    <h4>Using Microsoft.CodeAnalysis.CSharp</h4>
-    <h4>Now Time: @DateTime.Now.ToString()</h4>
-    <p>
-        <h4>Test Entity</h4>
-        <table>
-            <tr><td>Id</td><td>@Model.Id</td></tr>
-            <tr><td>Name</td><td>@Model.Name</td></tr>
-            <tr><td>Description</td><td>@Model.Description</td></tr>
-            <tr><td>Money</td><td>@Model.Money</td></tr>
-        </table>
-    </p>
-    <p>
-        <h4>Test @@Include()</h4>
+  <h1>Main Body</h1>
+  <h4>Using Microsoft.AspNetCore.Razor.Language</h4>
+  <h4>Using Microsoft.CodeAnalysis.CSharp</h4>
+  <h4>Now Time: @DateTime.Now.ToString()</h4>
+  <p>
+    <h4>Test Entity</h4>
+    <table>
+      <tr><td>Id</td><td>@Model.Id</td></tr>
+      <tr><td>Name</td><td>@Model.Name</td></tr>
+      <tr><td>Description</td><td>@Model.Description</td></tr>
+      <tr><td>Money</td><td>@Model.Money</td></tr>
+    </table>
+  </p>
+  <hr />
+  <p>
+    <h4>Test @@Include()</h4>
         @Include("razorFiles/main-part")
-    </p>
-    <p>
-        <h4>Test @@section()</h4>
-        <button id="btn1">Try Alert</button>
-    </p>
-    <p>
-        <h4>Test @@Html.Raw()</h4>
+  </p>
+  <hr />
+  <p>
+    <h4>Test @@section()</h4>
+    <button id="btn1">Try Alert</button>
+  </p>
+  <hr />
+  <p>
+    <h4>Test @@Html.Raw()</h4>
         @Html.Raw("<p>Html.Raw()输出原始html标记测试</p>")
-    </p>
-    <p>
-        <h4>Test @@()</h4>
+  </p>
+  <hr />
+  <p>
+    <h4>Test @@()</h4>
         @("@(\"纯文本\") 这个方法输出纯文本")
-    </p>
+  </p>
 </div>
 @section Scripts{
     <script>
-        ((win) => {
-            document.querySelector('#btn1').addEventListener('click', test);
-            function test() {
-                alert("Razor Test Page!");
-            }
-        })(window);
+      ((win) => {
+          document.querySelector('#btn1').addEventListener('click', test);
+          function test() {
+              alert("Razor Test Page!");
+          }
+      })(window);
     </script>
 }

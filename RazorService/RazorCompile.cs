@@ -36,7 +36,7 @@ internal static class RazorCompile
     /// </summary>
     /// <param name="CsSource"></param>
     /// <returns></returns>
-    public static (byte[] assembly, bool isok, string msg) CsSrcCompile(string CsSource)
+    public static byte[] CsSrcCompile(string CsSource)
     {
         SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(CsSource);
         var compilation = CSharpCompilation.Create(
@@ -50,18 +50,17 @@ internal static class RazorCompile
         var emitResult = compilation.Emit(memoryStream);
         if (emitResult.Success)
         {
-            var bytes = memoryStream.ToArray();
-            return (bytes, true, null);
+            return memoryStream.ToArray();
         }
-        else
+        // 编译失败,程序终止
+        StringBuilder sb = new();
+        foreach (Diagnostic diagnostic in emitResult.Diagnostics)
         {
-            StringBuilder sb = new();
-            foreach (Diagnostic diagnostic in emitResult.Diagnostics)
-            {
-                sb.AppendLine($"{diagnostic.Location}: {diagnostic.GetMessage()}");
-            }
-            return (null, false, sb.ToString());
+            sb.AppendLine($"Compile Error : {diagnostic.Location.GetLineSpan()} {diagnostic.GetMessage()}");
         }
+        sb.AppendLine("- Source Code Of CS -");
+        sb.AppendLine($"{CsSource}");
+        throw new RazorServeException(sb.ToString());
     }
 
     /// <summary>

@@ -26,19 +26,9 @@ public class RazorServe
 
     private static string Run(string path, dynamic model = null, TemplateBase RefBodyTemplate = null)
     {
-        try
-        {
-            // 从razor文件获取razor源码
-            string razorSrc = Helper.FindRazorFile(path);
-            if (razorSrc == null)
-                throw new Exception($"{path} is not exist!");
-            return RunTxt(razorSrc, model, RefBodyTemplate);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Run Exception:" + e.Message);
-            return null;
-        }
+        // 从razor文件获取razor源码
+        string razorSrc = Helper.FindRazorFile(path);
+        return RunTxt(razorSrc, model, RefBodyTemplate);
     }
 
     /// <summary>
@@ -49,43 +39,30 @@ public class RazorServe
     /// <returns></returns>
     private static string RunTxt(string razorSrc, dynamic model = null, TemplateBase RefBodyTemplate = null)
     {
-        try
+        string md5 = Helper.GetHex32Md5(razorSrc);
+        // 2.获取cs源码
+        string csSrc = RazorCache.GetCsSrc(md5);
+        if (csSrc == null)
         {
-            string md5 = Helper.GetHex32Md5(razorSrc);
-            // 2.获取cs源码
-            string csSrc = RazorCache.GetCsSrc(md5);
-            if (csSrc == null)
-            {
-                // 首次生成时,缓存到文件和内存
-                csSrc = RazorCompile.RazorSrcToCsSrc(razorSrc);
-                if (csSrc == null)
-                    throw new Exception("razor source translate into for cs code faild!");
-                RazorCache.SaveCsSrc(md5, csSrc);
+            // 首次生成时,缓存到文件和内存
+            csSrc = RazorCompile.RazorSrcToCsSrc(razorSrc);
+            RazorCache.SaveCsSrc(md5, csSrc);
 #if DEBUG
-                Helper.Log($"新的生成,已缓存cs: {md5}");
+            Helper.Log($"新的生成,已缓存cs: {md5}");
 #endif
-            }
-            // 3.获取dll
-            byte[] dll = RazorCache.GetDll(md5);
-            if (dll == null)
-            {
-                var (assembly, isok, msg) = RazorCompile.CsSrcCompile(csSrc);
-                if (isok == false)
-                    throw new Exception(msg);
-                dll = assembly;
-                RazorCache.SaveDll(md5, dll);
-#if DEBUG
-                Helper.Log($"新的编译,已缓存dll: {md5}");
-#endif
-            }
-            // 4.运行
-            return Execute(dll, model, RefBodyTemplate);
         }
-        catch (Exception e)
+        // 3.获取dll
+        byte[] dll = RazorCache.GetDll(md5);
+        if (dll == null)
         {
-            Console.WriteLine("Run Exception:" + e.Message);
-            return null;
+            dll = RazorCompile.CsSrcCompile(csSrc);
+            RazorCache.SaveDll(md5, dll);
+#if DEBUG
+            Helper.Log($"新的编译,已缓存dll: {md5}");
+#endif
         }
+        // 4.运行
+        return Execute(dll, model, RefBodyTemplate);
     }
 
     /// <summary>
@@ -115,7 +92,8 @@ public class RazorServe
         }
 
         // 运行方法后,才会生成属性值,例如sections,body,viewbag这些属性
-        instance.ExecuteAsync();
+        // 改用同步的,为了正常捕获异常
+        instance.ExecuteAsync().Wait();
 
         // 先保存模板结果.在执行section时,临时存储会清空
         instance.Body = instance.Result();

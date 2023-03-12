@@ -58,8 +58,7 @@ internal static class Helper
             if (File.Exists(file))
                 return File.ReadAllText(file);
         }
-
-        // 仍然没有
-        return null;
+        // 没找到文件,程序终止
+        throw new RazorServeException($"Razor file not found! Check the path: [{path}]");
     }
 }
