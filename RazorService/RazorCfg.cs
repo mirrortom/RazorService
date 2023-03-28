@@ -12,7 +12,7 @@ public static class RazorCfg
     /// <summary>
     /// 获取或者设置缓存目录 (默认值: RazorTemplateCache)
     /// </summary>
-    public static string CacheDir { get; set; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RazorTemplateCache");
+    public static string CacheDir { get; set; } = Path.Combine(AppContext.BaseDirectory, "RazorTemplateCache");
 
     /// <summary>
     /// 获取或设置内存缓存过期时间(分钟,默认120分钟)

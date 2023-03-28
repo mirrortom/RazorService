@@ -36,28 +36,41 @@ internal static class Helper
     /// <returns></returns>
     internal static string FindRazorFile(string path)
     {
-        // 直接判断文件是否存在,可以是相对或者绝对路径
-        if (File.Exists(path))
-            return File.ReadAllText(path);
+        // 将path弄成全路径名字
 
-        // 没有写扩展名的情况,加上扩展名后再次判断
+        // 1.支持省略扩展名
         string p = path;
         if (!Path.HasExtension(path))
         {
             p = $"{path}.{RazorCfg.ExtName}";
-            if (File.Exists(p))
-                return File.ReadAllText(p);
         }
 
-        // 从搜索目录查找
-        // 取得文件名字,加上缓存目录
-        string name = Path.GetFileName(p);
-        foreach (var dir in RazorCfg.SearchDirs)
+        // 2.相对路径(不是带盘符的那种全路径)
+        if (!Path.IsPathFullyQualified(p))
         {
-            string file = $"{dir}/{name}";
-            if (File.Exists(file))
-                return File.ReadAllText(file);
+            // 不带盘符的路径分为2种情况 aa/bb.txt和/aa/bb.txt,如果是/或\开头的,算是绝对路径
+            // 要将/或\去掉后,变成"相对路径"才能用Path.Combine()
+            if (Path.IsPathRooted(p))
+            {
+                p = p.TrimStart('/', '\\');
+            }
+            // 先从搜索目录查找,这个是正规情况
+            foreach (var dir in RazorCfg.SearchDirs)
+            {
+                string full = Path.Combine(dir, p);
+                if (File.Exists(full))
+                    return File.ReadAllText(full);
+            }
+            // 从程序运行目录查找,这种情况不正规
+            string full2 = Path.Combine(AppContext.BaseDirectory, p);
+            if (File.Exists(full2))
+                return File.ReadAllText(full2);
         }
+
+        // 3.带盘符全路径
+        if (File.Exists(p))
+            return File.ReadAllText(p);
+
         // 没找到文件,程序终止
         throw new RazorServeException($"Razor file not found! Check the path: [{path}]");
     }
