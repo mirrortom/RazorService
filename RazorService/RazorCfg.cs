@@ -49,10 +49,13 @@ public static class RazorCfg
 
     /// <summary>
     /// 设置razor文件搜索目录 使用绝对或者相对程序运行目录
+    /// 使用时发现问题,如果多个程序使用了服务,那么会加入自己的搜索目录,那么会乱,所以改为:
+    /// 每次编译前可以更新搜索目录
     /// </summary>
     /// <param name="searchDirs"></param>
-    public static void AddSearchDirs(params string[] searchDirs)
+    public static void SetSearchDirs(params string[] searchDirs)
     {
+        SearchDirs.Clear();
         foreach (var item in searchDirs)
         {
             if (SearchDirs.Contains(item))

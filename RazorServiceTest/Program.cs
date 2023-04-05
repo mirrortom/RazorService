@@ -6,7 +6,7 @@ using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-RazorCfg.AddSearchDirs("razorFiles");
+RazorCfg.SetSearchDirs("razorFiles");
 RazorCfg.StartTimer();
 
 // razor
