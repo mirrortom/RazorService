@@ -25,6 +25,9 @@
     <None Update="razorFiles\layout.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="razorFiles\singlepage.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="razorFiles\main-part.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

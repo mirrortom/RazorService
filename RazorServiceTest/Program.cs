@@ -11,6 +11,7 @@ RazorCfg.StartTimer();
 
 // razor
 string main = "main";
+string signlepage = "singlepage";
 // models
 PersonEntity model = new()
 {
@@ -30,13 +31,23 @@ dynamic[] models = { model, model2 };
 // run
 try
 {
-    foreach (var item in models)
-    {
-        string html = RazorServe.Run(main, item);
-        File.WriteAllText($"index_{item.Name}.html", html, Encoding.UTF8);
-        Console.WriteLine($"index_{item.Name}.html created.");
-        Console.WriteLine();
-    }
+    dynamic m = new ExpandoObject();
+    m.Name = "Mirror";
+    m.Items = new List<string>()
+                    {
+                            "item 1",
+                            "item 2"
+                    };
+    string html = RazorServe.Run(signlepage, m);
+    Console.WriteLine(html);
+    //foreach (var item in models)
+    //{
+    //    string html = RazorServe.Run(main, item);
+    //    File.WriteAllText($"index_{item.Name}.html", html, Encoding.UTF8);
+    //    Console.WriteLine($"index_{item.Name}.html created.");
+    //    Console.WriteLine();
+    //}
+
 }
 catch (RazorServeException e)
 {

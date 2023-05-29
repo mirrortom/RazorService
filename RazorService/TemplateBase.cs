@@ -31,6 +31,15 @@ public abstract class TemplateBase
         buffer.Append(obj);
     }
 
+    public void BeginWriteAttribute(string name, string prefix, int prefixOffset, string suffix, int suffixOffset, int attributeValuesCount)
+    {
+        buffer.Append(prefix);
+        buffer.Append(suffix);
+    }
+    public void EndWriteAttribute()
+    {
+
+    }
     public string RenderBody()
     {
         return Body;
