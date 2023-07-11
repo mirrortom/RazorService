@@ -1,5 +1,8 @@
-﻿using System.Security.Cryptography;
+﻿using System.Dynamic;
+using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace RazorService;
 
@@ -16,7 +19,26 @@ internal static class Helper
     }
 
 #endif
-
+    /// <summary>
+    /// 匿名类型转为动态类型.支持匿名类型的model.只能转换简单的,例如var m={name="mirror",复杂的属性不行}
+    /// 还是使用ExpandoObject靠谱
+    /// 匿名类型作用域范围太小,在一个方法内可以用,出了方法或者不在一个程序集时会出错.这不方便传递model
+    /// </summary>
+    /// <param name="model"></param>
+    internal static dynamic AnonymousTypeToExpandoObject(dynamic model)
+    {
+        if (model == null) return model;
+        TypeInfo t = model.GetType();
+        if (t == null)
+            return model;
+        // 这个检查匿名的方式是判断类型名字含有这个字符串,可能不靠谱
+        if (t.Name.Contains("AnonymousType"))
+        {
+            return JsonConvert.DeserializeObject(JsonConvert.SerializeObject(model), typeof(ExpandoObject));
+        }
+        // 其它情况都直接返回
+        return model;
+    }
     /// <summary>
     /// 获取文本的md5,以32位16进制字符串形式
     /// </summary>

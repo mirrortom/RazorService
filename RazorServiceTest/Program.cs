@@ -32,12 +32,15 @@ dynamic[] models = { model, model2 };
 try
 {
     dynamic m = new ExpandoObject();
+
     m.Name = "Mirror";
+    m.Html = "<h1>TOM</h1>";
     m.Items = new List<string>()
                     {
                             "item 1",
                             "item 2"
                     };
+
     string html = RazorServe.Run(signlepage, m);
     Console.WriteLine(html);
     //foreach (var item in models)

@@ -170,6 +170,8 @@ internal static class RazorCache
     {
         Set(src, key, CsKey);
         string path = $"{RazorCfg.CacheDir}/{key}.{CsKey}";
+        // 建立缓存目录,防止目录没建立.如果没有开启定时器,缓存目录就没有建立.
+        Directory.CreateDirectory(RazorCfg.CacheDir);
         File.WriteAllText(path, src, Encoding.UTF8);
     }
 }

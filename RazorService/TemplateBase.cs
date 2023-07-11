@@ -14,6 +14,7 @@ public abstract class TemplateBase
     public dynamic Model { get; set; } = null;
     public Dictionary<string, Action> SectionsAction { get; set; } = new();
     public Dictionary<string, string> Sections { get; set; } = new();
+    private string attributeSuffix = null;
     /// <summary>
     /// @html帮助方法 Raw()等
     /// </summary>
@@ -33,12 +34,18 @@ public abstract class TemplateBase
 
     public void BeginWriteAttribute(string name, string prefix, int prefixOffset, string suffix, int suffixOffset, int attributeValuesCount)
     {
+        this.attributeSuffix = suffix;
         buffer.Append(prefix);
-        buffer.Append(suffix);
+    }
+    public void WriteAttributeValue(string prefix, int prefixOffset, object? value, int valueOffset, int valueLength, bool isLiteral)
+    {
+        buffer.Append(prefix);
+        buffer.Append(value);
     }
     public void EndWriteAttribute()
     {
-
+        buffer.Append(this.attributeSuffix);
+        this.attributeSuffix = null;
     }
     public string RenderBody()
     {

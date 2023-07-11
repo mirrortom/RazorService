@@ -90,6 +90,8 @@ public static class RazorCfg
         MetadataReference.CreateFromFile(typeof(TemplateBase).Assembly.Location),
         MetadataReference.CreateFromFile(Assembly.Load("System.Linq").Location),
         MetadataReference.CreateFromFile(Assembly.Load("System.Linq.Expressions").Location),
+        // 当前程序集
+        MetadataReference.CreateFromFile(Assembly.GetEntryAssembly().Location),
         };
 
     internal static void RazorBuilder(RazorProjectEngineBuilder builder)

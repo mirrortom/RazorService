@@ -1,4 +1,6 @@
-﻿namespace RazorService;
+﻿using System.Security.Cryptography;
+
+namespace RazorService;
 
 public class RazorServe
 {
@@ -79,7 +81,7 @@ public class RazorServe
         var instance = RazorCompile.GetInstance(dll);
         if (model != null)
         {
-            instance.Model = model;
+            instance.Model = Helper.AnonymousTypeToExpandoObject(model);
         }
 
         // 运行layout模板时,会进入这里,上次运行的body模板对象会传入,以使用它的数据
@@ -88,7 +90,7 @@ public class RazorServe
             instance.Body = RefBodyTemplate.Body;
             instance.Sections = RefBodyTemplate.Sections;
             instance.ViewBag = RefBodyTemplate.ViewBag;
-            instance.Model = RefBodyTemplate.Model;
+            instance.Model = Helper.AnonymousTypeToExpandoObject(RefBodyTemplate.Model);
         }
 
         // 运行方法后,才会生成属性值,例如sections,body,viewbag这些属性

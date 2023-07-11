@@ -6,13 +6,13 @@
 }
 
 <div data-name="@Model.Name"></div>
-
+@Html.Raw(Model.Html)
 <input name="firstname" value="" />
 
 <area>
     @{ RecursionTest(3); }
 </area>
-
+<h1>@Html.Raw("${aaa}dddd"+"<p>111</p>"+"<a>aaaa</a>")</h1>
 @{
 	void RecursionTest(int level){
 		if (level <= 0)
