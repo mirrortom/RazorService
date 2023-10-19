@@ -8,10 +8,10 @@ using System.Text;
 
 RazorCfg.SetSearchDirs("razorFiles");
 RazorCfg.StartTimer();
-
 // razor
 string main = "main";
 string signlepage = "singlepage";
+string signlepageAttr = "E:\\kezong\\mldproj\\mld\\mld\\wwwroot\\login.cshtml";
 // models
 PersonEntity model = new()
 {
@@ -41,7 +41,8 @@ try
                             "item 2"
                     };
 
-    string html = RazorServe.Run(signlepage, m);
+  //string html = RazorServe.Run(signlepage, m);
+  string html = RazorServe.Run(signlepageAttr,new { sysname="TO11M"});
     Console.WriteLine(html);
     //foreach (var item in models)
     //{

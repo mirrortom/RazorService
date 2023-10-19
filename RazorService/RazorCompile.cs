@@ -14,13 +14,18 @@ internal static class RazorCompile
     /// <returns></returns>
     public static string RazorSrcToCsSrc(string razorSrc)
     {
+        // 添加常用using命名空间到razor源码
+        StringBuilder sb = new();
+        sb.Append(RazorCfg.CommonUsingNs);
+        sb.Append(razorSrc);
+
         RazorProjectEngine engine = RazorProjectEngine.Create(
             RazorConfiguration.Default,
             RazorProjectFileSystem.Create(@"."),
             RazorCfg.RazorBuilder);
         //
         RazorSourceDocument document = RazorSourceDocument.Create(
-            razorSrc,
+            sb.ToString(),
             Path.GetRandomFileName());
         RazorCodeDocument codeDocument = engine.Process(
             document,

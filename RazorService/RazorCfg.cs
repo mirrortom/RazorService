@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Razor.Language.Extensions;
 using Microsoft.CodeAnalysis;
 using System.Reflection;
+using System.Text;
 
 namespace RazorService;
 
@@ -103,4 +104,11 @@ public static class RazorCfg
         // 支持@section指令
         SectionDirective.Register(builder);
     }
+
+    /// <summary>
+    ///  常用的命名空间.这是添加到razor源文件头部的那些@using语句.
+    /// </summary>
+    /// <returns></returns>
+    internal static string CommonUsingNs { get; } =
+    "@using System;\r\n@using System.Collections.Generic;\r\n@using System.Linq;\r\n@using System.Linq.Expressions;\r\n";
 }
