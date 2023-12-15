@@ -76,13 +76,15 @@ public abstract class TemplateBase
     }
 
     /// <summary>
-    /// 当Include方法运行时,参数就是模板地址,直接编译运行这个模板,得到的结果写入临时缓存
+    /// 这个Include()本质是插入一个新的模板的运行结果.
+    /// 参数是新模板地址,编译运行这个模板得到结果,加入buffer.
+    /// 可以传入main模板的model数据,但其它章节或者再套layout则不再支持
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
     public string Include(string path)
     {
-        return RazorServe.Run(path);
+        return RazorServe.Run(path,Model);
     }
 
     public string Result()

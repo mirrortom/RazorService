@@ -40,7 +40,6 @@
         @("@(\"纯文本\") 这个方法输出纯文本")
     </p>
     <hr />
-    <h4>html标记的属性值不能是空字符串: <b>value=""</b> ,这会编译成C#代码.问题还在解决中.razorlight和razorengine没有这个问题.</h4>
     <p><input name="firstname" type="text" value="" /></p>
 </div>
 @section Scripts{
@@ -48,7 +47,7 @@
         ((win) => {
             document.querySelector('#btn1').addEventListener('click', test);
             function test() {
-                alert("Razor Test Page!");
+                alert("Razor Test Page!@Model.Name");
             }
         })(window);
     </script>

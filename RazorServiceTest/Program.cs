@@ -1,17 +1,12 @@
 ﻿using RazorService;
 using RazorServiceTest;
-using System.Drawing;
 using System.Dynamic;
-using System.Net.Http.Json;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 RazorCfg.SetSearchDirs("razorFiles");
 RazorCfg.StartTimer();
 // razor
 string main = "main";
 string signlepage = "singlepage";
-string signlepageAttr = "E:\\kezong\\mldproj\\mld\\mld\\wwwroot\\login.cshtml";
 // models
 PersonEntity model = new()
 {
@@ -31,26 +26,13 @@ dynamic[] models = { model, model2 };
 // run
 try
 {
-    dynamic m = new ExpandoObject();
-
-    m.Name = "Mirror";
-    m.Html = "<h1>TOM</h1>";
-    m.Items = new List<string>()
-                    {
-                            "item 1",
-                            "item 2"
-                    };
-
-  //string html = RazorServe.Run(signlepage, m);
-  string html = RazorServe.Run(signlepageAttr,new { sysname="TO11M"});
-    Console.WriteLine(html);
-    //foreach (var item in models)
-    //{
-    //    string html = RazorServe.Run(main, item);
-    //    File.WriteAllText($"index_{item.Name}.html", html, Encoding.UTF8);
-    //    Console.WriteLine($"index_{item.Name}.html created.");
-    //    Console.WriteLine();
-    //}
+    foreach (var item in models)
+    {
+        string html = RazorServe.Run(main, item);
+        File.WriteAllText($"index_{item.Name}.html", html, System.Text.Encoding.UTF8);
+        Console.WriteLine($"index_{item.Name}.html created.");
+        Console.WriteLine();
+    }
 
 }
 catch (RazorServeException e)
